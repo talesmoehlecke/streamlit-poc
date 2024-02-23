@@ -1,5 +1,8 @@
 import streamlit as st
 import streamlit_authenticator as stauth
+import logging
+
+logger = logging.getLogger(__name__)
 
 def register_widget(user_service, authenticator):
     """

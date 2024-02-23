@@ -1,14 +1,17 @@
 import streamlit as st
 import streamlit_authenticator as stauth
-import yaml
-import base64
-from yaml.loader import SafeLoader
-from mongodb.user import User
+import log.config_logger as config_logger
+import logging
+from mongodb.user import user_service
 from auth.config import load_config, add_users_to_config
 from widgets import register_widget, change_password_widget
+from menu import menu
 
-#AUTHENTICATION
-user_service = User()
+#Instancianting logger
+config_logger.setup_logging()
+logger = logging.getLogger(__name__)
+
+logger.info('Setting up authentication...')
 config = load_config()
 add_users_to_config(config, user_service.find_all())
 
@@ -21,8 +24,9 @@ authenticator = stauth.Authenticate(
 )
 
 authenticator.login()
-#END
+logger.info('Authentication setted up!')
 
+menu()
         
 if st.session_state["authentication_status"]:
     #authenticated menu
@@ -32,6 +36,7 @@ if st.session_state["authentication_status"]:
     change_password_widget(user_service, authenticator)
 elif st.session_state["authentication_status"] is False:
     st.error('Username/password is incorrect')
+    register_widget(user_service, authenticator)
 elif st.session_state["authentication_status"] is None:
     st.warning('Please enter your username and password')
     register_widget(user_service, authenticator)

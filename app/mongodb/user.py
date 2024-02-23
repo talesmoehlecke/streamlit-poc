@@ -1,10 +1,19 @@
 from .database import Database
 from datetime import datetime
 from bson import binary
-import base64
-import bcrypt
+from dataclasses import dataclass
 
+@dataclass
 class User:
+    username: str
+    name: str
+    email: str
+    password_hash: str
+    user_type: str
+    creation_date: datetime = datetime.now()
+    
+    
+class UserService:
     """
     A class to manage user operations in the MongoDB database, including creating users.
 
@@ -40,6 +49,7 @@ class User:
             "user_type": user_type,
             "creation_date": datetime.now()
         }
+        
         return self.collection.insert_one(user).inserted_id
 
     
@@ -77,3 +87,5 @@ class User:
     
         # Verificar se a senha foi alterada com sucesso
         return updated_result.modified_count > 0
+
+user_service = UserService()
